@@ -1,0 +1,157 @@
+alignment top_right
+
+update_interval 1.0
+
+cpu_avg_samples 2
+net_avg_samples 2
+
+default_color green
+default_outline_color red
+default_shade_color blue
+
+border_width 1
+#border_margin 4
+stippled_borders 0
+draw_borders no
+draw_graph_borders yes
+draw_outline no
+draw_shades no
+#gap_x 5
+#gap_y 60
+
+#xftfont Comic Sans none:size=12
+
+minimum_size 5 5
+double_buffer yes
+no_buffers no
+text_buffer_size 1024
+out_to_console no
+out_to_stderr no
+extra_newline no
+
+own_window yes
+own_window_class Conky
+own_window_type override #normal, desktop
+#own_window_hints undercorated,below,sticky,skip_taskbar,skip_pager
+own_window_transparent yes
+background no
+
+
+uppercase no
+use_spacer none
+show_graph_scale no
+show_graph_range no
+
+use_xft yes
+xftfont Bitstream Vera Sans Mono:size=8
+font Bitstream Vera Sans Mono:size=8
+#on_bottom yes
+
+#minimum_size 280 5
+maximum_width 309
+
+#override_utf8_locale no
+
+
+# stuff after 'TEXT' will be formatted on screen
+
+TEXT
+${color #88ff00}$nodename   Linux-$kernel${alignr}${time %T}
+$hr
+${color black}${hr 12}${color #f5f5de}${goto 4}$hr${font :size=10}${color black}${goto 140}${hr 12}${color #f5f5de}${goto 145}CPU $hr${font :size=8}
+${color grey}Frequency: $color ${freq_g 1} GHz ${color grey} ${alignr}Temp.:$color ${hwmon 0 temp 1} °C
+#${iconv_start UTF-8 ISO_8859-1}°${iconv_stop}C
+${color grey}CPU1:$color ${cpu cpu1}% ${goto 80}${color grey}CPU2:$color ${cpu cpu2}% ${goto 160}${color grey}CPU3:$color ${cpu cpu3}% ${goto 240}${color grey}CPU4:$color ${cpu cpu4}%
+${color #000000}${cpugraph cpu1 25,70 7f8ed3 00ff00} ${color #000000}${cpugraph cpu2 25,70 7f8ed3 00ff00} ${color #000000}${cpugraph cpu3 25,70 7f8ed3 00ff00} ${color #000000}${cpugraph cpu4 25,70 7f8ed3 00ff00}
+$color
+${color grey}RAM:${alignc}$color $mem / $memmax ${alignr} $memperc%
+${color grey}Swap:${alignc}$color $swap / $swapmax ${alignr} $swapperc%
+${color grey}Root: $alignc$color${fs_used /} / ${fs_size /} $alignr${fs_used_perc /}%
+${color #000000}${diskiograph_read /dev/sda3 32,309 00ff00 00ff00 -l}${offset -309}${color #000000}${diskiograph_write /dev/sda3 32,309 ff0000 ff0000 -l}
+${if_match ${execi 30 df -h --exclude-type tmpfs -x devtmpfs | wc -l}>2}
+${color grey}${execi 30 df -h --exclude-type tmpfs -x devtmpfs | awk '(NR==1)'}
+$color${execi 30 df -h --exclude-type tmpfs -x devtmpfs | awk '!((NR==2)||(NR==1))'}$endif
+${color black}${hr 12}${color #f5f5de}${goto 4}$hr${font :size=10}${color black}${goto 130}${hr 12}${color #f5f5de}${goto 135}Network $hr${font :size=8}
+${color grey}Ip:$color ${addr wlp2s0} ${color grey}${goto 155}- ssid: $color${wireless_essid wlp2s0}${color grey}
+${color grey}Quallity: \
+${if_match ${wireless_link_qual wlp2s0} > 50}${color green}\
+${wireless_link_qual wlp2s0}% (good)$color\
+$else\
+${if_match ${wireless_link_qual wlp2s0} > 35}${color yellow}${wireless_link_qual_perc wlp2s0}% (ok)$color\
+$else\
+${if_match ${wireless_link_qual wlp2s0} > 20}${color orange}${wireless_link_qual_perc wlp2s0}% (weak)$color\
+$else\
+${color red}${wireless_link_qual_perc wlp2s0}% (bad)$color\
+$endif$endif$endif\
+${color grey}${goto 155}- Bitrate:$color ${wireless_bitrate wlp2s0}
+${color grey}Total Down:$color ${totaldown wlp2s0} ${color grey} ${goto 155}- Total Up:$color ${totalup wlp2s0}
+${color grey}Down:$color ${downspeed wlp2s0} ${color grey} ${goto 155}- Up:$color ${upspeed wlp2s0}
+${color #000000}${downspeedgraph wlp2s0 32,150 7f8ed3 00ff00} ${color #000000}${upspeedgraph wlp2s0 32,150 7f8ed3 00ff00}
+${color black}${hr 12}${color #f5f5de}${goto 4}$hr${font :size=10}${color black}${goto 135}${hr 12}${color #f5f5de}${goto 140}Power $hr${font :size=8}
+${color grey}Status: \
+${if_existing /sys/class/power_supply/ADP0/online 1}\
+${color #0088FF}AC/DC Adapter connected
+${color grey}Charge: ${color #0088FF}$battery_percent% ${battery_bar 8}${color grey}
+$else\
+${color green}Running on Battery
+${color grey}Charge:\
+${if_match $battery_percent <= 10}\
+${color red} ${blink $battery_percent%} ${battery_bar 8}
+$else\
+${if_match $battery_percent <= 20}\
+${color orange}\
+$else\
+${if_match $battery_percent <= 30}\
+${color yellow}\
+$else\
+${color green}\
+$endif$endif\
+ $battery_percent% ${battery_bar 8}
+${color grey}Time left: \
+${if_match $battery_percent <= 10}\	
+${color red}\
+$else\
+${if_match $battery_percent <= 20}\
+${color orange}\
+$else\
+${if_match $battery_percent <= 30}\
+${color yellow}\
+$else\
+${color green}\
+$endif$endif$endif\
+$battery_time
+$endif$endif\
+#only display if mocp running (file/song name)
+#only display if mocp p playing (time information / bar (more from info))
+######################################################
+${color black}${hr 12}${color #f5f5de}${goto 4}$hr${font :size=10}${color black}${goto 135}${hr 12}${color #f5f5de}${goto 140}Music $hr${font :size=8}
+${if_match ${execi 5 amixer get Master | egrep -o 'off' | wc -l} >= 1}${color #ff8800} (Mute)$endif${color #f5f5de}
+${color grey}${if_match ${execi 5 ps -ef | grep 'moc[p] -S'| wc -l} == 1}${execpi 5 /home/dustin/.conky/mocp_info.py}$endif
+${color grey}Volume: ${color green}${execi 5 amixer get Master | egrep -o '[0-9]+%' -m 1 | cut -d '%' -f 1}% ${execibar 5 amixer get Master | egrep -o '[0-9]+%' -m 1 | cut -d '%' -f 1}
+${color black}${hr 12}${color #f5f5de}${goto 4}$hr${font :size=10}${color black}${goto 130}${hr 12}${color #f5f5de}${goto 135}Weather $hr${font :size=8}
+#${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ EDDK temperature 30}
+${color white}
+${font ConkyWeather:size=50}E${font}${voffset -38}${font Comic Sans MS:size=28}${execi 120 conkyForecastWU --datatype=HT}${voffset -15}${font ConkyWeather:size=70} ${execpi 120 ~/.conky/weather_convert.sh}$font
+${color #f5f5dc}${font Comic Sans MS:size=16}${execpi 120 conkyForecastWU --datatype=DW --startday=1 --shortweekday} ${alignc}${execpi 120 conkyForecastWU --datatype=DW --startday=2 --shortweekday} ${alignr 40}${execpi 120 conkyForecastWU --datatype=DW --startday=3 --shortweekday}
+${color white}${font ConkyWeather:size=60}${execpi 120 ~/.conky/weather_convert.sh "-s 1"}${alignc -25}${font ConkyWeather:size=60}${execpi 120 ~/.conky/weather_convert.sh "-s 2"}${alignr 100}${font ConkyWeather:size=60}${execpi 120 ~/.conky/weather_convert.sh "-s 3"}$font
+${color #f5f5dc}${font DejaVu Sans:size=12}${execpi 120 conkyForecastWU --datatype=HT --startday=1 --hideunits --centeredwidth=3}/${execpi 120 conkyForecastWU --datatype=LT --startday=1 --hideunits --centeredwidth=3}${alignc -25}${execpi 120 conkyForecastWU --datatype=HT --startday=2 --hideunits --centeredwidth=3}/${execpi 120 conkyForecastWU --datatype=LT --startday=2 --hideunits --centeredwidth=3} ${alignr 20}${execpi 120 conkyForecastWU --datatype=HT --startday=3 --hideunits --centeredwidth=3}/${execpi 120 conkyForecastWU --datatype=LT --startday=3 --hideunits --centeredwidth=3}
+#${execpi 120 conkyForecastWU --datatype=HT --startday=4 --hideunits --centeredwidth=3}/${execpi 120 conkyForecastWU --datatype=LT --startday=4 --hideunits --centeredwidth=3}${font}
+${color white}${font DejaVu Sans:size=10}${voffset 4}Location:${color green}${alignr}${execi 120 conkyForecastWU --datatype=CN}
+${color white}Last Updated: ${color green}${alignr} ${execi 120 conkyForecastWU --hideunits --datatype=LU -m 0 }
+${color white}Feels Like:${color green}${alignr}${execi 120 conkyForecastWU --datatype=LT}
+${color white}Dew Point: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=DP}
+${color white}Current Condition:${color green}${alignr}${execi 120 conkyForecastWU --datatype=CT}
+${color white}Chance of Precip: ${color green}${alignr}${execi 120 conkyForecastWU  --startday=0 --datatype=PC}
+${color white}Humidity: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=HM}
+${color white}Wind: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=WS} - ${execi 120 conkyForecastWU --datatype=WD}
+${color white}Pressure: ${color green}${alignr}${execi 120 conkyForecastWU --hideunits --datatype=BR}
+${color white}Visibility: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=VI}
+${color white}Sunrise: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=SR}
+${color white}Sunset: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=SS}
+${color white}UV Index: ${color green}${alignr}${execi 120 conkyForecastWU --datatype=UI}
+#${color white}Warnings: ${alignr -10}${font Arial Black:size=8}${color orange}${execi 120 conkyForecastWU --datatype=AT | cut -d' ' -f1}
+${font Bitstream Vera Sans Mono:size=8}${color grey}${hr}
+${if_match ${execi 60 pacman -Qu | wc -l}==0}${color #00ff00}No updates available
+$else${font Bitstream Vera Sans Mono:size=8:bold}${color #ee0000}${blink ${execi 60 /home/dustin/scripts/updates.sh}}${goto 15} updates available
+$endif${color grey}
+$font
